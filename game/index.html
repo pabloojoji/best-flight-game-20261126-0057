@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canyon Medevac — Storm Rescue Run</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #241040; }
+  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .hud { position: fixed; z-index: 5; color: #fdf6e3; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 0 8px rgba(0,0,0,0.6); pointer-events: none; }
+  #mission { top: 12px; left: 50%; transform: translateX(-50%); text-align: center; width: 640px; }
+  #mission-name { font-size: 20px; font-weight: 800; letter-spacing: 2px; color: #ffb400; }
+  #mission-text { font-size: 15px; margin-top: 3px; }
+  #mission-meta { font-size: 15px; font-weight: 700; margin-top: 3px; }
+  #mission-meta span { margin: 0 10px; }
+  #compass { display: block; margin: 6px auto 0; border-radius: 4px; }
+  #warn { top: 150px; left: 50%; transform: translateX(-50%); font-size: 24px; font-weight: 800;
+    letter-spacing: 2px; color: #ff5a3c; visibility: hidden; }
+  .tape { top: 42%; font-size: 26px; font-weight: 800; line-height: 1.15; }
+  .tape small { display: block; font-size: 14px; font-weight: 600; color: #ffb400; letter-spacing: 1px; }
+  #speed-tape { left: 22px; text-align: left; }
+  #alt-tape { right: 22px; text-align: right; }
+  #gauges { left: 22px; bottom: 20px; font-size: 15px; font-weight: 700; width: 250px; }
+  .bar-row { margin-top: 6px; }
+  .bar { height: 12px; border-radius: 6px; background: rgba(0,0,0,0.55); overflow: hidden; margin-top: 2px; }
+  .bar > div { height: 100%; width: 100%; border-radius: 6px; }
+  #fuel-bar { background: #39ff8a; }
+  #damage-bar { background: #ff5a3c; width: 0%; }
+  #wind { margin-top: 8px; font-size: 14px; color: #ffb400; }
+  #radar { right: 22px; bottom: 20px; }
+  #overlay { position: fixed; inset: 0; z-index: 10; display: none; align-items: flex-start; justify-content: center;
+    padding-top: 22px; background: rgba(16,8,32,0.45); }
+  .panel { background: rgba(24,16,40,0.92); border: 2px solid #3d2b52; border-radius: 14px;
+    padding: 20px 32px; max-width: 620px; color: #fdf6e3; text-align: center;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; box-shadow: 0 12px 48px rgba(0,0,0,0.6); }
+  .panel h1 { margin: 0; font-size: 44px; letter-spacing: 4px; color: #ffb400; }
+  .panel h2 { margin: 6px 0 0; font-size: 17px; letter-spacing: 3px; color: #0fb5c9; font-weight: 700; }
+  .panel .brief { font-size: 17px; line-height: 1.5; margin: 18px 0 6px; }
+  .panel table { margin: 14px auto 4px; border-collapse: collapse; font-size: 16px; text-align: left; }
+  .panel td { padding: 3px 18px; }
+  .panel td.num { text-align: right; font-weight: 800; color: #ffb400; }
+  .panel tr.total td { border-top: 2px solid #3d2b52; font-size: 20px; padding-top: 8px; }
+  .panel .prompt { font-size: 19px; font-weight: 800; color: #39ff8a; margin: 16px 0 0; letter-spacing: 1px; }
+  .panel .hint { font-size: 14px; color: #c9b8d9; margin: 10px 0 0; line-height: 1.45; }
+  /* In the cockpit the panel carries the gauges, so the floating tapes, the
+     separate radar and the fuel/damage/wind block stand down; the mission
+     banner and warnings stay. The panel itself shows wind and damage. */
+  body.cockpit #speed-tape, body.cockpit #alt-tape, body.cockpit #radar, body.cockpit #gauges { display: none; }
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="Canyon Medevac: fly the bush plane through the canyon storm, drop supplies, pick up the patient, land at the clinic"></canvas>
+<div class="hud" id="mission">
+  <div id="mission-name">MISSION 1/3 — SUPPLY DROP</div>
+  <div id="mission-text"></div>
+  <div id="mission-meta"><span id="points">0 PTS</span><span id="timer">0:00</span></div>
+  <canvas id="compass" width="360" height="36"></canvas>
+</div>
+<div class="hud" id="warn"></div>
+<div class="hud tape" id="speed-tape"><small>AIRSPEED</small><span id="speed">0 kt</span><small id="vspeed">+0 fpm</small></div>
+<div class="hud tape" id="alt-tape"><small>ALTITUDE</small><span id="alt">0 ft</span><small>THR <span id="throttle">0%</span></small></div>
+<div class="hud" id="gauges">
+  <div class="bar-row"><span id="fuel-text">FUEL 100%</span><div class="bar"><div id="fuel-bar"></div></div></div>
+  <div class="bar-row"><span id="damage-text">DAMAGE 0%</span><div class="bar"><div id="damage-bar"></div></div></div>
+  <div id="wind">WIND 270° / 12 kt</div>
+</div>
+<canvas class="hud" id="radar" width="190" height="190"></canvas>
+<div id="overlay"></div>
+<p id="status" role="status" aria-live="polite"></p>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
