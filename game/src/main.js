@@ -84,15 +84,16 @@ const CONTROLS = [
 function menuHtml() {
   const rows = CONTROLS.map(([a, b]) => `<tr><td>${a}</td><td>${b}</td></tr>`).join('');
   return `<div class="panel">
-    <h1>CANYON MEDEVAC</h1>
-    <h2>Storm Rescue Run &nbsp;•&nbsp; N774RM</h2>
-    <p class="brief">A storm is coming down the canyon and three people need you.
-    Fly the bush plane from Riverbend Strip, drop medical supplies to the stranded
-    climbers, land on the short Cliff Strip to pick up the patient, then bring
-    them home to the Clinic Airstrip before the fuel — or the storm — ends the run.</p>
+    <h1>ISLAND RESCUE</h1>
+    <h2>Island Rescue Run &nbsp;•&nbsp; N774RM</h2>
+    <p class="brief">A storm is gathering over the sea and three people need you.
+    Fly the bush plane from Cove Strip, drop medical supplies to the stranded
+    beachgoers on North Beach, land on the short Island Strip to pick up the
+    patient, then bring them home to the City Airport before the fuel — or the
+    storm — ends the run.</p>
     <table>${rows}</table>
     <p class="prompt">Press SPACE or click to fly</p>
-    <p class="hint">Watch the wind. The gusts push the plane, the rain hides the walls,
+    <p class="hint">Watch the wind. The gusts push the plane, the rain hides the city,
     and a hard landing is damage you keep. The radar finds your next target.</p>
   </div>`;
 }
@@ -112,10 +113,10 @@ function endHtml(finished) {
     <tr><td>Damage</td><td class="num">−${b.damagePenalty}</td></tr>` : `
     <tr><td>Missions done</td><td class="num">${missions.completed.filter(Boolean).length} / 3</td></tr>
     <tr><td>Time flown</td><td class="num">${Math.floor(missions.time / 60)}:${String(Math.floor(missions.time % 60)).padStart(2, '0')}</td></tr>`;
-  const title = finished ? 'RUN COMPLETE' : 'DOWN IN THE CANYON';
+  const title = finished ? 'RUN COMPLETE' : 'DOWN ON THE ISLAND';
   const sub = finished
-    ? 'The patient is safe at the clinic. The canyon remembers a careful pilot.'
-    : `The run ended: ${missions.crashReason}. The canyon keeps what it catches.`;
+    ? 'The patient is safe at the City Airport. The island remembers a careful pilot.'
+    : `The run ended: ${missions.crashReason}. The island keeps what it catches.`;
   return `<div class="panel"><h1>${title}</h1>
     <p class="brief">${sub}</p>
     <table>${rows}
@@ -151,7 +152,7 @@ function runGame() {
   let accumulator = 0;
   let last = performance.now();
   showMenu();
-  announce('Canyon Medevac. Press Space or click to fly.');
+  announce('Island Rescue. Press Space or click to fly.');
 
   function frame(now) {
     requestAnimationFrame(frame);

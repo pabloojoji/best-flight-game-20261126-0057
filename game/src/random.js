@@ -11,7 +11,7 @@ export function mulberry32(seed) {
 }
 
 // A tiny deterministic value-noise field built from a seeded grid: smooth enough
-// for canyon detail, cheap enough to call while the terrain mesh is built.
+// for island detail, cheap enough to call while the terrain mesh is built.
 export function makeNoise(seed) {
   const rand = mulberry32(seed);
   const perm = new Uint8Array(512);

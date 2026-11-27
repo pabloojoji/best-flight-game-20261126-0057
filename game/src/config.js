@@ -1,25 +1,23 @@
-// Canyon Medevac — Storm Rescue Run: every constant the game runs on.
+// Island Rescue Run: every constant the game runs on.
 // One place for the world, the aircraft, the missions, the storm and the look,
 // so tuning the game never means hunting numbers through the other files.
 export const CONFIG = {
-  // World: a desert canyon running east-west, a river along its floor.
+  // World: a green tropical island in a bright blue sea, ringed by beaches,
+  // with gentle hills, a town, a city district and distant mountains across
+  // the water.
   world: {
     minX: -2000, maxX: 2000, minZ: -1600, maxZ: 1600,
-    gridX: 100, gridZ: 80, // terrain cells; low-poly, vertex-coloured, no textures
-    riverAmp1: 180, riverFreq1: 1 / 900,
-    riverAmp2: 80, riverFreq2: 1 / 400, riverPhase2: 1.7,
-    wallStart: 350, wallEnd: 1100, wallHeight: 300,
-    floorBase: 8, floorAmp: 14,
+    gridX: 320, gridZ: 256, // terrain cells; smooth-shaded with procedural albedo
+    islandRX: 1850, islandRZ: 1350, // the island's ellipse radii; the sea is outside
+    seaLevel: 0,
     seed: 20261126,
   },
-  // The four places that matter: start strip, drop ledge, pickup strip, clinic strip.
-  // zOff is the offset from the river centreline at that x (the river meanders, so
-  // world.js resolves each site to an absolute position from riverZ(x) + zOff).
+  // The four places that matter: home strip, drop beach, pickup strip, city airport.
   sites: {
-    start: { x: -1500, zOff: 0, heading: 0, length: 320, width: 24, kind: 'dirt', name: 'RIVERBEND STRIP' },
-    drop: { x: -200, zOff: 600, ringR: 62, ringAbove: 62, name: 'CLIMBERS LEDGE' },
-    pickup: { x: 480, zOff: -300, heading: 0, length: 280, width: 26, kind: 'dirt', name: 'CLIFF STRIP' },
-    clinic: { x: 1520, zOff: 0, heading: 0, length: 420, width: 30, kind: 'paved', name: 'CLINIC AIRSTRIP' },
+    start: { x: -1400, z: 100, heading: 0, length: 320, width: 24, kind: 'dirt', name: 'COVE STRIP' },
+    drop: { x: -300, z: -1290, ringR: 62, ringAbove: 62, name: 'NORTH BEACH' },
+    pickup: { x: 500, z: 350, heading: 0, length: 280, width: 26, kind: 'dirt', name: 'ISLAND STRIP' },
+    clinic: { x: 1500, z: -100, heading: 0, length: 420, width: 30, kind: 'paved', name: 'CITY AIRPORT' },
   },
   // The bush plane: a STOL workhorse. Speeds in m/s, shown to the player in knots.
   plane: {
@@ -37,7 +35,7 @@ export const CONFIG = {
   // The storm: a living cell that drifts east, grows through the missions, and
   // pushes the plane around. Intensity is 0..1 and ramps with the mission index.
   storm: {
-    startX: 600, startZ: -600, radius: 900, drift: 5,
+    startX: 900, startZ: -900, radius: 900, drift: 5,
     baseWindDir: 0, baseWindSpeed: 6, // blowing east, from the west
     gustMax: 12, gustFreq: 0.35,
     rainMax: 260, boltEveryMin: 4, boltEveryMax: 9,
@@ -46,25 +44,34 @@ export const CONFIG = {
   // Missions: three different jobs, one score. Points are the whole game.
   missions: [
     { id: 0, name: 'SUPPLY DROP', points: 400,
-      text: 'Drop medical supplies to the stranded climbers on the north ledge. Fly through the amber ring and press SPACE.' },
+      text: 'Drop medical supplies to the stranded beachgoers on North Beach. Fly through the amber ring and press SPACE.' },
     { id: 1, name: 'PICKUP', points: 400,
-      text: 'Land on the short Cliff Strip, press SPACE to load the patient, then take off again.' },
-    { id: 2, name: 'CLINIC RUN', points: 600,
-      text: 'Fly through the storm to the Clinic Airstrip and land gently before the fuel runs out.' },
+      text: 'Land on the short Island Strip, press SPACE to load the patient, then take off again.' },
+    { id: 2, name: 'CITY RUN', points: 600,
+      text: 'Fly to the City Airport and land gently before the fuel runs out.' },
   ],
   scoring: { timeBonusMax: 300, timeBonusAt: 240, fuelPerUnit: 3, damagePerPoint: 2 },
-  // Look: one vivid dusk-storm style. Terrain and sky share it; nothing is washed out.
+  // Look: a bright sunny day over a green island in a blue sea.
+  // Blue sky, white clouds, sunlit grass and beaches — nothing dusk.
   palette: {
-    skyTop: '#241040', skyMid: '#5b2a63', skyHorizon: '#ff9a3c', sunCore: '#ffd27a',
-    cloudDark: '#2e1a4d', cloudEdge: '#7a3a6e',
-    river: '#0fb5c9', riverDeep: '#067d8f',
-    sand: '#e08a3c', sandDark: '#b96a2e',
-    rockLow: '#d94f2b', rockMid: '#b73a20', rockHigh: '#7e2a1c', rockTop: '#4a2438',
-    scrub: '#7a9a3a',
-    stripDirt: '#8a5a2e', stripPaved: '#3a3a44', stripLine: '#f5f0dc',
+    skyTop: '#1a5fb4', skyMid: '#4a94d8', skyHorizon: '#cfe9f7', sunCore: '#fff7d6',
+    cloudDark: '#5a6a7a', cloudEdge: '#9fb2c2',
+    ocean: '#1e9fd8', oceanDeep: '#0d6ea8',
+    sand: '#e0c48a', sandDark: '#c9a86a',
+    scrub: '#5da244',
+    stripDirt: '#a97e4e', stripPaved: '#4a4a55', stripLine: '#f5f0dc',
     beacon: '#ffb400', beaconGreen: '#39ff8a', ring: '#ffb400',
     hudText: '#fdf6e3', hudAccent: '#ffb400', hudGood: '#39ff8a', hudWarn: '#ff5a3c',
-    panel: '#1c1626', panelEdge: '#3d2b52', gaugeFace: '#f7ecd2', gaugeGlow: '#ffb400',
+    panel: '#23262e', panelEdge: '#3a3f4a', gaugeFace: '#f7ecd2', gaugeGlow: '#ffb400',
+  },
+  // Lighting: a high midday sun in the east (the plane flies toward it), a
+  // bright blue sky ambient and a warm ground bounce, so the island reads as
+  // sunlit grass and beaches under a clear sky.
+  light: {
+    sunDir: [0.55, 0.72, 0.38], // high sun, toward the east
+    sunStrength: 1.0,
+    ambient: 0.55,
+    haze: [186, 216, 238], // pale blue daylight haze the far ground melts into
   },
   // Performance: HD but light. One canvas, DPR capped, no textures, no post passes.
   perf: { maxDpr: 1.5, step: 1 / 60, farDist: 2600, fogNear: 900, fogFar: 2400, fov: 1.13 },

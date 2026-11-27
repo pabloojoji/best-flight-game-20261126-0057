@@ -1,6 +1,6 @@
 // The three missions and the score. Each mission has one job, one target and
-// one way to finish it; the run ends when the plane lands at the clinic, or
-// when the canyon or the fuel ends the run first.
+// one way to finish it; the run ends when the plane lands at the City Airport,
+// or when the sea or the fuel ends the run first.
 import { CONFIG } from './config.js';
 
 export function createMissions() {
@@ -61,7 +61,7 @@ export function stepMissions(m, plane, edges, world, flightEvent, dt) {
       m.completed[0] = true;
       m.crate = { x: plane.x, y: plane.y - 3, z: plane.z, landed: false };
       m.index = 1;
-      say(m, `SUPPLIES DELIVERED  +${CONFIG.missions[0].points}  —  now land on the Cliff Strip`, 5);
+      say(m, `SUPPLIES DELIVERED  +${CONFIG.missions[0].points}  —  now land on the Island Strip`, 5);
     } else if (edges.actionPressed && !inRing) {
       // Nothing happened, and the player should know why: the drop only
       // counts inside the amber ring.
@@ -77,7 +77,7 @@ export function stepMissions(m, plane, edges, world, flightEvent, dt) {
         m.score += CONFIG.missions[1].points;
         m.completed[1] = true;
         m.index = 2;
-        say(m, `PATIENT ABOARD  +${CONFIG.missions[1].points}  —  take off and fly to the Clinic Airstrip`, 5);
+        say(m, `PATIENT ABOARD  +${CONFIG.missions[1].points}  —  take off and fly to the City Airport`, 5);
       }
       return null;
     }
@@ -87,7 +87,7 @@ export function stepMissions(m, plane, edges, world, flightEvent, dt) {
     }
     return null;
   }
-  // Mission 2: the clinic landing ends the run.
+  // Mission 2: the City Airport landing ends the run.
   if (flightEvent && flightEvent.event === 'landed' && flightEvent.strip === 'clinic') {
     m.score += CONFIG.missions[2].points;
     m.completed[2] = true;

@@ -22,7 +22,7 @@ function autopilotInput(game) {
   let desired, targetAlt;
   if (target.kind === 'ring') {
     // Steer at the ring; on the approach, fly the ring's height, not a
-    // terrain-clearance altitude (the ring hangs just above its ledge).
+    // terrain-clearance altitude (the ring hangs just above its beach).
     desired = Math.atan2(target.z - plane.z, target.x - plane.x);
     const dist = Math.hypot(target.x - plane.x, target.z - plane.z);
     if (dist < 900) { targetAlt = target.y; }
@@ -81,7 +81,7 @@ function autopilotInput(game) {
       && Math.abs(plane.y - target.y) < 42 && !plane.onGround;
     if (inRing) actionPressed = true;
   }
-  // Pickup: once down on the Cliff Strip, press Space to load the patient, and
+  // Pickup: once down on the Island Strip, press Space to load the patient, and
   // sit still while the loading runs instead of taking off under the stretcher.
   if (missions.index === 1 && plane.onGround && plane.strip === 'pickup' && missions.loading <= 0 && !missions.loaded) {
     actionPressed = true;
@@ -114,13 +114,15 @@ export function stageShot(name, game) {
     return { screen: 'playing', view: name === 'cockpit' ? 'cockpit' : 'chase' };
   }
   if (name === 'end') {
-    // A finished run, staged through the real clinic-landing path: the plane
-    // sits on the clinic strip with the run's numbers, and the landing event
-    // finishes it exactly as a player's landing would.
+    // A finished run, staged through the real City Airport landing path: the
+    // plane sits on the City Airport strip with the run's numbers, and the
+    // landing event finishes it exactly as a player's landing would.
     const { plane, missions, world } = game;
     const clinic = world.sites.clinic;
     plane.x = clinic.x; plane.z = clinic.z; plane.y = clinic.y + 2.2;
-    plane.heading = clinic.heading; plane.pitch = 0; plane.roll = 0;
+    // The plane landed heading west, down the strip: the chase camera then
+    // sits east of it and looks west, at the city skyline beyond the strip.
+    plane.heading = Math.PI; plane.pitch = 0; plane.roll = 0;
     plane.speed = 0; plane.throttle = 0; plane.onGround = true; plane.strip = 'clinic';
     plane.fuel = 28; plane.damage = 12;
     missions.index = 2;
@@ -130,6 +132,6 @@ export function stageShot(name, game) {
     stepMissions(missions, plane, { actionPressed: false }, world, { event: 'landed', strip: 'clinic' }, STEP);
     return { screen: 'ended', view: 'chase', endKind: 'finished' };
   }
-  // Anything else is the start scene: the plane on its strip, dusk, beacons lit.
+  // Anything else is the start scene: the plane on its strip, bright day, beacons lit.
   return { screen: 'menu', view: 'chase' };
 }

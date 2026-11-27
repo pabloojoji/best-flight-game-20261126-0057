@@ -89,7 +89,7 @@ export function stepFlight(plane, input, world, dt) {
   plane.z += vz * dt;
   if (!plane.onGround) plane.y += vs * dt;
 
-  // Stay inside the canyon: a soft wall at the map edge turns the plane back.
+  // Stay over the island: a soft wall at the map edge turns the plane back.
   if (plane.x < CONFIG.world.minX + 60 || plane.x > CONFIG.world.maxX - 60
     || plane.z < CONFIG.world.minZ + 60 || plane.z > CONFIG.world.maxZ - 60) {
     plane.heading += Math.PI * dt * 0.4;
@@ -101,6 +101,9 @@ export function stepFlight(plane, input, world, dt) {
   const floorY = groundY + P.gearHeight;
   if (!plane.onGround && plane.y <= floorY) {
     plane.y = floorY;
+    // Ditching in the sea: water is not a landing. Touching down where the
+    // ground is below the waterline ends the run.
+    if (groundY < 0) return { event: 'crashed', reason: 'ditched in the sea' };
     const strip = overStrip(world, plane.x, plane.z);
     const headDiff = Math.abs(((plane.heading % Math.PI) + Math.PI) % Math.PI - 0);
     const aligned = headDiff <= P.landHeadingMax || Math.abs(headDiff - Math.PI) <= P.landHeadingMax;
@@ -131,6 +134,8 @@ export function stepFlight(plane, input, world, dt) {
 
   // Takeoff: enough speed and the stick back lifts the plane off the strip.
   if (plane.onGround) {
+    // Taxiing into the sea is still ditching.
+    if (groundY < 0) return { event: 'crashed', reason: 'ditched in the sea' };
     plane.y = floorY;
     if (plane.speed >= 30 && -input.pitch > 0.2) {
       plane.onGround = false; plane.airborne = true; plane.strip = null;
